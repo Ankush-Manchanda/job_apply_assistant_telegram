@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card">
+  <h2>{{ job.title }}</h2>
+  <p><strong>Company:</strong> {{ job.company }}</p>
+  <p><strong>Location:</strong> {{ job.location or 'Not specified' }}</p>
+  <p><strong>Platform:</strong> {{ job.platform }}</p>
+  <p><strong>Score:</strong> {{ job.score }}</p>
+  <p><strong>Status:</strong> {{ job.status }}</p>
+  <p><strong>Posted:</strong> {{ job.posted_raw or 'Unknown' }}</p>
+  <p><strong>Apply link:</strong> <a href="{{ job.url }}" target="_blank" rel="noopener">Open job page</a></p>
+  <pre class="description">{{ job.description }}</pre>
+</section>
+
+<div class="grid two-col">
+  <section class="card">
+    <h3>Update Status</h3>
+    <form action="/jobs/{{ job.id }}/status" method="post" class="stack">
+      <select name="status">
+        <option value="new">new</option>
+        <option value="reviewed">reviewed</option>
+        <option value="applied">applied</option>
+        <option value="skipped">skipped</option>
+        <option value="interview">interview</option>
+      </select>
+      <button>Save Status</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h3>Pick Resume and Save</h3>
+    <form action="/jobs/{{ job.id }}/save-application" method="post" class="stack">
+      <label>Resume
+        <select name="resume_id">
+          <option value="">No resume selected</option>
+          {% for resume in resumes %}
+          <option value="{{ resume.id }}">{{ resume.name }} - {{ resume.target_role }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Notes<textarea name="notes" placeholder="Anything you want to remember for this application"></textarea></label>
+      <button>Save Application Record</button>
+    </form>
+  </section>
+</div>
+
+<section class="card">
+  <h3>Saved Records</h3>
+  <ul>
+    {% for row in applications %}
+      <li>#{{ row.id }} · status={{ row.status }} · created={{ row.created_at }}</li>
+    {% else %}
+      <li>No saved records yet.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

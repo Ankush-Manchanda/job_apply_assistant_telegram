@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="grid two-col">
+  <section class="card stats">
+    <h2>Overview</h2>
+    <div class="stat-grid">
+      <div><strong>{{ stats.total_jobs }}</strong><span>Total Jobs</span></div>
+      <div><strong>{{ stats.matched_jobs }}</strong><span>Matched</span></div>
+      <div><strong>{{ stats.new_jobs }}</strong><span>New</span></div>
+      <div><strong>{{ stats.applied_jobs }}</strong><span>Applied</span></div>
+    </div>
+    <div class="actions-row">
+      <form action="/run-check" method="post"><button>Run Check Now</button></form>
+      <form action="/test-telegram" method="post"><button class="secondary">Test Telegram</button></form>
+    </div>
+    <p class="small">Base URL: {{ settings.app_base_url }}</p>
+    <p class="small">Scheduler interval: {{ settings.job_check_interval_minutes }} minutes</p>
+  </section>
+
+  <section class="card">
+    <h2>Filter Profile</h2>
+    <form action="/profile" method="post" class="stack">
+      <label>Title keywords<textarea name="title_keywords">{{ profile.title_keywords }}</textarea></label>
+      <label>Must-have skills<textarea name="must_have_skills">{{ profile.must_have_skills }}</textarea></label>
+      <label>Locations<textarea name="locations">{{ profile.locations }}</textarea></label>
+      <label>Exclude keywords<textarea name="exclude_keywords">{{ profile.exclude_keywords }}</textarea></label>
+      <label>Minimum score<input type="number" name="min_score" value="{{ profile.min_score }}"></label>
+      <button>Save Filter Profile</button>
+    </form>
+  </section>
+</div>
+
+<div class="grid two-col">
+  <section class="card">
+    <h2>Job Sources</h2>
+    <div class="source-list">
+      {% for source in sources %}
+      <div class="source-item">
+        <div>
+          <strong>{{ source.name }}</strong>
+          <p class="small">{{ source.source_type|upper }} · {{ source.url }}</p>
+          <p class="small">{{ 'Enabled' if source.enabled else 'Disabled' }}</p>
+        </div>
+        <form action="/sources/{{ source.id }}/toggle" method="post">
+          <button class="secondary">Toggle</button>
+        </form>
+      </div>
+      {% else %}
+      <p>No sources yet.</p>
+      {% endfor %}
+    </div>
+
+    <h3>Add Source</h3>
+    <form action="/sources" method="post" class="stack">
+      <label>Name<input name="name" required></label>
+      <label>Type
+        <select name="source_type">
+          <option value="rss">rss</option>
+          <option value="html">html</option>
+        </select>
+      </label>
+      <label>URL<input name="url" required></label>
+      <label>Location hint<input name="location_hint"></label>
+      <label>HTML selector<input name="selector" placeholder="Only for html sources"></label>
+      <label>HTML title selector<input name="title_selector"></label>
+      <label>HTML link selector<input name="link_selector"></label>
+      <button>Add Source</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Resume Library</h2>
+    <ul class="resume-list">
+      {% for resume in resumes %}
+      <li>
+        <strong>{{ resume.name }}</strong>
+        <span>{{ resume.target_role }}</span>
+        <a href="/resumes/{{ resume.id }}/download">Download</a>
+      </li>
+      {% else %}
+      <li>No resumes uploaded.</li>
+      {% endfor %}
+    </ul>
+
+    <h3>Upload Resume</h3>
+    <form action="/resumes" method="post" enctype="multipart/form-data" class="stack">
+      <label>Resume name<input name="name" required></label>
+      <label>Target role<input name="target_role" value="Data Analyst"></label>
+      <label>Notes<textarea name="notes"></textarea></label>
+      <label>PDF/DOC file<input type="file" name="file" required></label>
+      <button>Upload Resume</button>
+    </form>
+  </section>
+</div>
+
+<section class="card">
+  <h2>Latest Jobs</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Company</th>
+          <th>Location</th>
+          <th>Score</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for job in jobs %}
+        <tr>
+          <td>{{ job.title }}</td>
+          <td>{{ job.company }}</td>
+          <td>{{ job.location }}</td>
+          <td>{{ job.score }}</td>
+          <td>{{ job.status }}</td>
+          <td><a href="/jobs/{{ job.id }}">Open</a></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">No jobs yet. Click "Run Check Now".</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
