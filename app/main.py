@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 @app.get("/")
 def home():
     return {"status": "running"}
 
-from __future__ import annotations
 
 import shutil
 from contextlib import asynccontextmanager
