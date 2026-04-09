@@ -1,3 +1,7 @@
+@app.get("/")
+def home():
+    return {"status": "running"}
+
 from __future__ import annotations
 
 import shutil
