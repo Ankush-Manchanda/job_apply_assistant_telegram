@@ -1,10 +1,5 @@
 from __future__ import annotations
 
-@app.get("/")
-def home():
-    return {"status": "running"}
-
-
 import shutil
 from contextlib import asynccontextmanager
 from datetime import datetime
@@ -66,6 +61,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
 app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
