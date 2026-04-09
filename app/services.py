@@ -151,7 +151,7 @@ def fetch_rss(source: Source) -> list[dict]:
 def fetch_html(source: Source) -> list[dict]:
     resp = requests.get(source.url, timeout=TIMEOUT, headers={"User-Agent": "Mozilla/5.0"})
     resp.raise_for_status()
-    soup = BeautifulSoup(resp.text, "lxml")
+    soup = BeautifulSoup(resp.text, "html.parser")
     selector = source.selector or "a"
     nodes = soup.select(selector)
     items: list[dict] = []
